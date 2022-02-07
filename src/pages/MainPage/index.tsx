@@ -12,6 +12,10 @@ import MenuItem from "@mui/material/MenuItem";
 import classes from "./index.module.scss";
 import { FormControl } from "@mui/material";
 
+interface CustomTokenHeader {
+  [headerName: string]: string;
+}
+
 const MainPage: React.FC = () => {
   const [algosCount, setAlgosCount] = useState<string>("");
   const [recPubKey, setRecPubKey] = useState<string>("");
@@ -27,8 +31,11 @@ const MainPage: React.FC = () => {
     setUserAccounts(accountsSharedByUser);
   };
   const handleSendTransaction = async () => {
+    const tokenHeader: CustomTokenHeader = {
+      "x-api-key": process.env.REACT_APP_PURESTAKE_TOKEN as string,
+    };
     const algodClient = new algosdk.Algodv2(
-      "8zV71DPDPd7X7zV4YXxPA9ZqSPalTOEP4DUHxhYH",
+      tokenHeader,
       "https://testnet-algorand.api.purestake.io/ps2",
       ""
     );
