@@ -1,0 +1,17 @@
+.container {
+  width: 66vw;
+  padding: 2rem 1rem;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px #777;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #333;
+}

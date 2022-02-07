@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MyAlgoConnect, { Accounts } from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
+import { Routes, Route, Link } from "react-router-dom";
 
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -56,7 +57,7 @@ const MainPage: React.FC = () => {
 
   return (
     <div className={classes.container}>
-      <p className={classes.title}>Send transaction</p>
+      <p className={classes.title}>Send transaction with AlgoSigner</p>
       <Stack sx={{ width: "60vw" }} spacing={5}>
         <TextField
           id="stats-amount-input"
@@ -119,6 +120,7 @@ const MainPage: React.FC = () => {
         >
           Send txs
         </Button>
+        <Link to="/myalgowallet">Switch to MyAlgoWallet</Link>
       </Stack>
     </div>
   );

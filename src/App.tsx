@@ -1,10 +1,15 @@
 import React from "react";
-import MainPage from "./pages/MainPage";
+import AlgoSigner from "./pages/AlgoSignerPage";
+import MyAlgoWallet from "./pages/MyAlgoWalletPage";
+import { Routes, Route } from "react-router-dom";
 
 const App = () => {
   return (
     <div className="App">
-      <MainPage />
+      <Routes>
+        <Route path="/algosigner" element={<AlgoSigner />} />
+        <Route path="/myalgowallet" element={<MyAlgoWallet />} />
+      </Routes>
     </div>
   );
 };
