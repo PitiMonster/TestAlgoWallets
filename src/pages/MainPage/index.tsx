@@ -29,7 +29,7 @@ const MainPage: React.FC = () => {
   const handleSendTransaction = async () => {
     const algodClient = new algosdk.Algodv2(
       "8zV71DPDPd7X7zV4YXxPA9ZqSPalTOEP4DUHxhYH",
-      "https://testnet-algorand.api.purestake.io/idx2",
+      "https://testnet-algorand.api.purestake.io/ps2",
       ""
     );
     const params = await algodClient.getTransactionParams().do();
