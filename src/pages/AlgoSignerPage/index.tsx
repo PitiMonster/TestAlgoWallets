@@ -35,26 +35,14 @@ const MainPage: React.FC = () => {
       console.log("AlgoSigner is installed.");
     } else {
       console.log("AlgoSigner is NOT installed.");
+      return;
     }
-    AlgoSigner.connect()
-      .then((d: any) => {
-        console.log(JSON.stringify(d));
-      })
-      .catch((e: any) => {
-        console.error(e);
-        console.log(JSON.stringify(e));
-      });
-    AlgoSigner.accounts({
+    await AlgoSigner.connect();
+
+    const accounts: Account[] = await AlgoSigner.accounts({
       ledger: "TestNet",
-    })
-      .then((d: any) => {
-        console.log(JSON.stringify(d));
-        setUserAccounts(d);
-      })
-      .catch((e: any) => {
-        console.error(e);
-        console.log(JSON.stringify(e));
-      });
+    });
+    setUserAccounts(accounts);
   };
   const handleSendTransaction = async () => {
     const tokenHeader: CustomTokenHeader = {
