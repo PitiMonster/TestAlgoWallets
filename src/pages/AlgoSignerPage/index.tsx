@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MyAlgoConnect, { Accounts } from "@randlabs/myalgo-connect";
+import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
 import { Routes, Route, Link } from "react-router-dom";
 
@@ -17,19 +17,44 @@ interface CustomTokenHeader {
   [headerName: string]: string;
 }
 
+interface Account {
+  address: string;
+}
+
+declare let AlgoSigner: any;
+
 const MainPage: React.FC = () => {
   const [algosCount, setAlgosCount] = useState<string>("");
   const [recPubKey, setRecPubKey] = useState<string>("");
   const [myAlgoConnect, setMyAlgoConnect] = useState<any>(null);
-  const [userAccounts, setUserAccounts] = useState<Accounts[]>([]);
+  const [userAccounts, setUserAccounts] = useState<Account[]>([]);
   const [senderAccount, setSenderAccount] = useState<string>("0");
 
   const handleConnectWallet = async () => {
-    const myAlgoConnect = new MyAlgoConnect();
-    const accountsSharedByUser = await myAlgoConnect.connect();
-    console.log(accountsSharedByUser);
-    setMyAlgoConnect(myAlgoConnect);
-    setUserAccounts(accountsSharedByUser);
+    if (typeof AlgoSigner !== "undefined") {
+      console.log("AlgoSigner is installed.");
+    } else {
+      console.log("AlgoSigner is NOT installed.");
+    }
+    AlgoSigner.connect()
+      .then((d: any) => {
+        console.log(JSON.stringify(d));
+      })
+      .catch((e: any) => {
+        console.error(e);
+        console.log(JSON.stringify(e));
+      });
+    AlgoSigner.accounts({
+      ledger: "TestNet",
+    })
+      .then((d: any) => {
+        console.log(JSON.stringify(d));
+        setUserAccounts(d);
+      })
+      .catch((e: any) => {
+        console.error(e);
+        console.log(JSON.stringify(e));
+      });
   };
   const handleSendTransaction = async () => {
     const tokenHeader: CustomTokenHeader = {
@@ -47,8 +72,13 @@ const MainPage: React.FC = () => {
       to: recPubKey,
       amount: parseInt(algosCount),
     });
-    const signedTxn = await myAlgoConnect.signTransaction(txn.toByte());
-    const response = await algodClient.sendRawTransaction(signedTxn.blob).do();
+    let txn_b64 = AlgoSigner.encoding.msgpackToBase64(txn.toByte());
+    const signedTxns = await AlgoSigner.signTxn([{ txn: txn_b64 }]);
+
+    const response = await AlgoSigner.send({
+      ledger: "TestNet",
+      tx: signedTxns[0].blob,
+    });
   };
 
   const handleSendPubKeyChange = (event: SelectChangeEvent) => {
@@ -82,18 +112,18 @@ const MainPage: React.FC = () => {
             <MenuItem value={30}>Thirty</MenuItem> */}
             {userAccounts.map((value, index) => (
               <MenuItem key={value.address} value={index}>
-                {value.name}
+                {value.address}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-        <TextField
+        {/* <TextField
           id="sender-public-key-input"
           // label="Sender public key"
           variant="standard"
           disabled
           value={userAccounts[parseInt(senderAccount)]?.address}
-        />
+        /> */}
         <TextField
           id="receiver-public-key-input"
           label="Receiver public key"
@@ -109,7 +139,6 @@ const MainPage: React.FC = () => {
         <Button
           disabled={
             !(
-              myAlgoConnect &&
               recPubKey &&
               userAccounts[parseInt(senderAccount)]?.address &&
               +algosCount
